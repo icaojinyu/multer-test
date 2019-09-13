@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>vue+axios文件上传</title>
+  <style>
+    h1 {
+      text-align: center;
+    }
+
+    input {
+      display: block;
+      margin: 20px auto;
+    }
+  </style>
+  <script src="node_modules/vue/dist/vue.js"></script>
+  <script src="node_modules/axios/dist/axios.js"></script>
+</head>
+<body>
+<div id="app">
+  <h1>vue+axios文件上传</h1>
+  <form>
+    <input v-model="account" type="text" placeholder="账号">
+    <input v-model="password" type="password" placeholder="密码">
+    <input @change="getFile" type="file" multiple>
+    <input @click.prevent="upload" type="submit" value="上传">
+  </form>
+</div>
+<script>
+  const http = axios.create({
+    baseURL: 'http://localhost:3000',
+    headers: {'Content-Type': 'multipart/form-data'}
+  })
+
+  new Vue({
+    el: '#app',
+    data() {
+      return {
+        account: '',
+        password: '',
+        file: ''
+      }
+    },
+    methods: {
+      getFile(e) {
+        this.file = e.target.files[0]
+        console.log(this.file)
+      },
+      async upload() {
+        const param = new FormData() //创建form对象
+        //通过append向form对象添加数据
+        param.append('account', this.account)
+        param.append('password', this.password)
+        param.append('file', this.file)
+        //FormData私有类对象，访问不到，可以通过get判断值是否传进去
+        // console.log(param.get('file'))
+        const res = await http.post('/upload', param)
+        console.log(res)
+      }
+    }
+  })
+</script>
+</body>
+</html>
